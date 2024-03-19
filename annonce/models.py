@@ -19,7 +19,6 @@ class creer_annonce(models.Model):
     description = models.CharField(max_length=150)
     type = models.CharField(max_length=10)
     photo_voiture = models.ImageField(upload_to='annonces/')
-    # created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('approved', 'Approved'),

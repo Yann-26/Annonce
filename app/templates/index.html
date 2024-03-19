@@ -83,14 +83,6 @@
   </head>
 
   <body>
-    <!--[if lte IE 9]>
-      <p class="browserupgrade">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="https://browsehappy.com/">upgrade your browser</a> to improve
-        your experience and security.
-      </p>
-    <![endif]-->
-
     <!--welcome-hero start -->
     <section id="home" class="welcome-hero">
       <!-- top-area Start -->
@@ -118,10 +110,36 @@
                   >carvilla<span></span
                 ></a>
               </div>
+              {% if messages %}
+              <div id="container">
+                {% for message in messages %}
+                <br />
+                {% if message.tags == 'error' %}
+                <p class="error-message">{{ message }}</p>
+                {% elif message.tags == 'success' %}
+                <p class="success-message">{{ message }}</p>
+                {% endif %}
+                <br />
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <style>
+                .error-message {
+                  color: #ff0000; /* Rouge pour les messages d'erreur */
+                  font-weight: bold; /* Texte en gras pour les messages d'erreur */
+                }
+
+                .success-message {
+                  color: #008000; /* Vert pour les messages de réussite */
+                  font-weight: bold; /* Texte en gras pour les messages de réussite */
+                }
+              </style>
               <!--/.navbar-header-->
               <!-- End Header Navigation -->
 
               <!-- Collect the nav links, forms, and other content for toggling -->
+
               <div
                 class="collapse navbar-collapse menu-ui-design"
                 id="navbar-menu"
@@ -133,55 +151,46 @@
                 >
                   <li class="scroll active"><a href="#home">home</a></li>
                   <li class="scroll"><a href="#service">service</a></li>
-                  <li class="scroll">
+                  <!-- <li class="scroll">
                     <a href="#featured-cars">featured cars</a>
-                  </li>
+                  </li> -->
                   <li class="scroll"><a href="#new-cars">new cars</a></li>
                   <li class="scroll"><a href="#brand">brands</a></li>
                   <li class="scroll"><a href="#contact">contact</a></li>
-                  {% if user.is_authenticated %}
-
-                  <button
-                    type="button"
-                    class="btn btn-success dropdown-toggle"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    {{ request.user.username }}
-                  </button>
-                  <div class="dropdown-menu">
-                    {% if user.is_superuser %}
-                    <a class="dropdown-item" href="{% url 'dashboard' %}"
-                      >dashboard</a
-                    >
-                    {% endif %}$
-
-                    <a class="dropdown-item" href="{% url 'annonce' %}"
-                      >creer annonce</a
-                    >
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'signout' %}"
-                      >Deconnexion</a
-                    >
-                  </div>
-
-                  {% else %}
-                  <a
-                    type="button"
-                    class="btn btn-success dropdown-toggle"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    href="{% url 'signin' %}"
-                  >
-                    Connexion
-                  </a>
-
+                  {% if not user.is_authenticated %}
+                  <li >
+                    <a href="{% url 'annonce' %}">Creer annonce</a>
+                  </li>
                   {% endif %}
+                  <li class="dropdown">
+                    <a
+                      href="#"
+                      class="dropdown-toggle"
+                      data-toggle="dropdown"
+                      role="button"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    >
+                      {% if user.is_authenticated %} {{ request.user.username }}
+                      {% else %}
+                      <li><a href="{% url 'signin' %}">Connexion</a></li>
+                      {% endif %}
+                      <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                      {% if user.is_superuser %}
+                      <li><a href="{% url 'annonce' %}">Créer annonce</a></li>
+                      <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                      {% else %}
+                      <li><a href="{% url 'annonce' %}">Créer annonce</a></li>
+                      {% endif %}
+                      <li role="separator" class="divider"></li>
+                      <li><a href="{% url 'signout' %}">Deconnexion</a></li>
+                    </ul>
+                  </li>
                 </ul>
-                <!--/.nav -->
               </div>
+
               <!-- /.navbar-collapse -->
             </div>
             <!--/.container-->
@@ -468,19 +477,35 @@
                 <div class="featured-img-box">
                   <div class="featured-cars-img">
                     {% if annonce.photo_voiture %}
-                    <img src="{{ annonce.photo_voiture.url }}" alt="" />
+                    <img
+                      src="{{ annonce.photo_voiture.url }}"
+                      alt="images de l'annonce"
+                    />
                     {% else %}
                     <p>pas d'image disponible</p>
                     {% endif %}
                   </div>
                   <div class="row featured-model-info">
-                    <p>
+                    <div
+                      class="card"
+                      style="
+                        display: grid;
+                        flex-direction: column;
+                        grid-template-columns: 2fr;
+                        justify-content: center;
+                        align-items: center;
+                        text-align: center;
+                        column-gap: 50px;
+                        min-height: 15vh;
+                      "
+                    >
                       {{ annonce.modele_voiture }}
                       <span class="featured-mi-span">
                         {{ annonce.body_style }}</span
                       >
                       <span class="featured-hp-span"> {{ annonce.color }}</span>
                       {{ annonce.type }}
+                      <br />
                       <button
                         type="button"
                         class="btn btn-primary"
@@ -489,29 +514,32 @@
                       >
                         Commenter
                       </button>
-                    </p>
+                    </div>
                   </div>
                 </div>
                 <div class="featured-cars-txt">
                   <h2><a href="#">{{ annonce.annonce }}</a></h2>
-                  <h3>{{ annonce.prix_voiture }}</h3>
+                  <h3>{{ annonce.prix_voiture }}$</h3>
                   <p>{{ annonce.description }}</p>
-                  <div id="time">
-                    <div class="timer" id="timer_{{ annonce.id }}"></div>
-                  </div>
                   <!--afficher les commentaires  -->
                   <a
                     class="btn btn-collapse"
                     data-toggle="collapse"
-                    href="#collapseExample"
+                    href="#collapseExample{{ annonce.id }}"
                     role="button"
                     aria-expanded="false"
                     aria-controls="collapseExample"
                   >
                     Voir les commentaires
                   </a>
-                  <div class="collapse collapse-content" id="collapseExample">
+                  <div
+                    class="collapse collapse-content"
+                    id="collapseExample{{ annonce.id }}"
+                  >
                     <div class="card card-body">
+                      {% if commentaire %}
+                      <p>pas de commentaires</p>
+                      <p>{% else %}</p>
                       {% for commentaire in annonce.commentaires.all %}
                       <ul>
                         <li>
@@ -530,31 +558,9 @@
                         </li>
                       </ul>
                       {% endfor %}
+                      <p>{% endif %}</p>
                     </div>
                   </div>
-
-                  <script>
-                    // durée d'une annonce
-                                   function updateTimer_{{ annonce.id }}(){
-                                   	var debutPromo = new Date("{{ annonce.debut_promo }}"); // Récupérer la date de début de promotion
-                                   	var finPromo = new Date("{{ annonce.fin_promo }}"); // Récupérer la date de fin de promotion
-                                   	var now = new Date();
-                                   	var diff = finPromo - now;
-
-                                   	var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                                   	var hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
-                                   	var mins = Math.floor(diff / (1000 * 60)) % 60;
-                                   	var secs = Math.floor(diff / 1000) % 60;
-
-                                   	document.getElementById("timer_{{ annonce.id }}")
-                                   		.innerHTML =
-                                   		'<div>' + days + '<span>days</span></div>' +
-                                   		'<div>' + hours + '<span>hours</span></div>' +
-                                   		'<div>' + mins + '<span>minutes</span></div>' +
-                                   		'<div>' + secs + '<span>seconds</span></div>';
-                                   }
-                                   setInterval('updateTimer_{{ annonce.id }}()', 1000);
-                  </script>
                 </div>
               </div>
             </div>

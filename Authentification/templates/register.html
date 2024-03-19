@@ -132,8 +132,9 @@
                     <div class="grid--50-50">
                       <label for="password">Mot de passe</label>
                     </div>
-                    <input type="password" name="password" />
+                    <input type="password" id="password" name="password" />
                   </div>
+
                   <div class="field padding-bottom--24">
                     <div class="grid--50-50">
                       <label for="password">Confirmer le mot de passe</label>
@@ -141,10 +142,36 @@
                     <input type="password" name="password_confirm" />
                   </div>
 
+                  {% if messages %}
+                  <div id="container">
+                    {% for message in messages %}
+                    <br />
+                    {% if message.tags == 'error' %}
+                    <p class="error-message">{{ message }}</p>
+                    {% elif message.tags == 'success' %}
+                    <p class="success-message">{{ message }}</p>
+                    {% endif %}
+                    <br />
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+
+                  <style>
+                    .error-message {
+                      color: #ff0000; /* Rouge pour les messages d'erreur */
+                      font-weight: bold; /* Texte en gras pour les messages d'erreur */
+                    }
+
+                    .success-message {
+                      color: #008000; /* Vert pour les messages de réussite */
+                      font-weight: bold; /* Texte en gras pour les messages de réussite */
+                    }
+                  </style>
                   <div class="field padding-bottom--24">
                     <input type="submit" value="Créer" />
                   </div>
                 </form>
+                <a href="{% url 'signin' %}">Se connecter</a>
               </div>
             </div>
           </div>

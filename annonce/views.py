@@ -3,9 +3,13 @@ from .models import *
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from datetime import datetime
 
 # Create your views here.
 
+
+from datetime import datetime
+from django.utils import timezone
 
 def create_annonce(request):
     if request.method  == "POST":
@@ -15,13 +19,16 @@ def create_annonce(request):
         modele_voiture = request.POST.get('modele_voiture')
         body_style = request.POST.get('body_style')
         color  = request.POST.get('color')
-        debut_promo = request.POST.get('debut_promo')
-        fin_promo = request.POST.get('fin_promo')
+        debut_promo_str = request.POST.get('debut_promo')
+        fin_promo_str = request.POST.get('fin_promo')
         description = request.POST.get('description')
         type = request.POST.get('type')
         photo_voiture = request.POST.get('photo_voiture')
-        
-        
+
+        # Convertir les dates en objets datetime
+        debut_promo = timezone.make_aware(datetime.strptime(debut_promo_str, '%d/%m/%Y'))
+        fin_promo = timezone.make_aware(datetime.strptime(fin_promo_str, '%d/%m/%Y'))
+
         new_annonce = creer_annonce(
             annonce = annonce,
             marque_voiture = marque_voiture,
@@ -35,7 +42,6 @@ def create_annonce(request):
             type = type,
             photo_voiture = photo_voiture,
         )
-        # annonce.created_by = request.user
         new_annonce.save()
         messages.success(request, 'Votre annonce a été créée avec succès. En attente de validation par l\'administrateur')
         return redirect('index')
@@ -45,12 +51,12 @@ def create_annonce(request):
 
 
 
-@login_required
+
+@login_required(login_url='signin')
 def ajouter_commentaire(request, annonce_id ):
     if request.method == 'POST':
         contenu = request.POST.get('contenu')  
         utilisateur = request.user 
-
         annonce = creer_annonce.objects.get(pk=annonce_id)  
         
         # Créer le commentaire

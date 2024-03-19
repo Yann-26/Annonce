@@ -10,7 +10,7 @@ class index(ListView):
     context_object_name = 'annonces_approuvees' 
 
     def get_queryset(self):
-        return creer_annonce.objects.filter(status='approved')
+        return creer_annonce.objects.filter(status='approved').order_by('-id')  # Tri par ordre descendant
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -24,3 +24,4 @@ class index(ListView):
 
         context['commentaires_par_annonce'] = commentaires_par_annonce
         return context
+
